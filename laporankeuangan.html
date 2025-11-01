@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Keuangan - Elegant Tracker</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            background-color: #F5F5DC; /* Krem lembut */
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 900px;
+            background-color: #FFF8DC; /* Putih krem */
+            border: 2px solid #D4AF37; /* Border emas */
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #D4AF37; /* Emas */
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        .month-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 15px;
+            border: 1px solid #D4AF37;
+            border-radius: 5px;
+            background-color: #FAF0E6;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-family: 'Times New Roman', serif;
+            font-size: 1em;
+        }
+        
+        .tab.active {
+            background-color: #D4AF37;
+            color: #FFF;
+        }
+        
+        .tab:hover {
+            background-color: #F0E68C;
+        }
+        
+        .form-section {
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        input, select, button {
+            padding: 10px;
+            border: 1px solid #D4AF37;
+            border-radius: 5px;
+            font-family: 'Times New Roman', serif;
+            font-size: 1em;
+        }
+        
+        button {
+            background-color: #D4AF37;
+            color: #FFF;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #B8860B; /* Emas gelap */
+        }
+        
+        .delete-btn {
+            background-color: #DC143C; /* Merah untuk hapus */
+            color: #FFF;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        
+        .delete-btn:hover {
+            background-color: #B22222; /* Merah gelap */
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            border: 1px solid #D4AF37;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        th {
+            background-color: #D4AF37;
+            color: #FFF;
+            font-weight: bold;
+        }
+        
+        td {
+            background-color: #FAF0E6;
+        }
+        
+        .summary {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.2em;
+            color: #8B4513; /* Coklat tua */
+        }
+        
+        .income { color: #228B22; } /* Hijau untuk pemasukan */
+        .expense { color: #DC143C; } /* Merah untuk pengeluaran */
+        
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Laporan Keuangan</h1>
+        
+        <div class="month-tabs">
+            <div class="tab active" onclick="setMonthFilter('all')">Semua</div>
+            <div class="tab" onclick="setMonthFilter('01')">Januari</div>
+            <div class="tab" onclick="setMonthFilter('02')">Februari</div>
+            <div class="tab" onclick="setMonthFilter('03')">Maret</div>
+            <div class="tab" onclick="setMonthFilter('04')">April</div>
+            <div class="tab" onclick="setMonthFilter('05')">Mei</div>
+            <div class="tab" onclick="setMonthFilter('06')">Juni</div>
+            <div class="tab" onclick="setMonthFilter('07')">Juli</div>
+            <div class="tab" onclick="setMonthFilter('08')">Agustus</div>
+            <div class="tab" onclick="setMonthFilter('09')">September</div>
+            <div class="tab" onclick="setMonthFilter('10')">Oktober</div>
+            <div class="tab" onclick="setMonthFilter('11')">November</div>
+            <div class="tab" onclick="setMonthFilter('12')">Desember</div>
+        </div>
+        
+        <div class="form-section">
+            <input type="date" id="date" required>
+            <select id="type">
+                <option value="income">Pemasukan</option>
+                <option value="expense">Pengeluaran</option>
+            </select>
+            <select id="category">
+                <option value="">Pilih Kategori</option>
+                <option value="Kebutuhan">Kebutuhan</option>
+                <option value="Bensin">Bensin</option>
+                <option value="Makanan">Makanan</option>
+                <option value="Transport">Transport</option>
+                <option value="Lainnya">Lainnya</option>
+            </select>
+            <input type="text" id="description" placeholder="Deskripsi (e.g., Gaji, Belanja)">
+            <input type="number" id="amount" placeholder="Jumlah (Rp)">
+            <button onclick="addTransaction()">Tambah</button>
+        </div>
+        
+        <table id="transactionTable">
+            <thead>
+                <tr>
+                    <th>Tanggal</th>
+                    <th>Jenis</th>
+                    <th>Kategori</th>
+                    <th>Deskripsi</th>
+                    <th>Jumlah</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="transactionBody">
+                <!-- Transaksi akan ditambahkan di sini -->
+            </tbody>
+        </table>
+        
+        <div class="summary">
+            <p>Total Pemasukan: <span id="totalIncome" class="income">Rp 0</span></p>
+            <p>Total Pengeluaran: <span id="totalExpense" class="expense">Rp 0</span></p>
+            <p>Saldo: <span id="balance">Rp 0</span></p>
+        </div>
+        
+        <footer>
+            Aplikasi sederhana untuk tracking keuangan. Data tersimpan sementara di browser. Klik tab bulan untuk filter.
+        </footer>
+    </div>
+
+    <script>
+        let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+        let currentMonthFilter = 'all'; // Default semua
+        
+        function setMonthFilter(month) {
+            currentMonthFilter = month;
+            // Update active tab
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            updateTable();
+            updateSummary();
+        }
+        
+        function addTransaction() {
+            const date = document.getElementById('date').value;
+            const type = document.getElementById('type').value;
+            const category = document.getElementById('category').value;
+            const description = document.getElementById('description').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            
+            if (!date || !category || !description || isNaN(amount) || amount <= 0) {
+                alert('Masukkan tanggal, kategori, deskripsi, dan jumlah yang valid!');
+                return;
+            }
+            
+            // Format tanggal ke DD/MM/YYYY
+            const formattedDate = new Date(date).toLocaleDateString('id-ID');
+            
+            const transaction = {
+                date: formattedDate,
+                type,
+                category,
+                description,
+                amount
+            };
+            
+            transactions.push(transaction);
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+            updateTable();
+            updateSummary();
+            
+            // Reset form
+            document.getElementById('date').value = '';
+            document.getElementById('category').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('amount').value = '';
+        }
+        
+        function deleteTransaction(index) {
+            if (confirm('Yakin ingin menghapus transaksi ini?')) {
+                transactions.splice(index, 1);
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+                updateTable();
+                updateSummary();
+            }
+        }
+        
+        function updateTable() {
+            const tbody = document.getElementById('transactionBody');
+            tbody.innerHTML = '';
+            
+            transactions.forEach((t, index) => {
+                // Filter berdasarkan bulan
+                if (currentMonthFilter !== 'all') {
+                    const month = t.date.split('/')[1]; // Ambil bulan dari DD/MM/YYYY
+                    if (month !== currentMonthFilter) return;
+                }
+                
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = t.date;
+                row.insertCell(1).textContent = t.type === 'income' ? 'Pemasukan' : 'Pengeluaran';
+                row.insertCell(2).textContent = t.category;
+                row.insertCell(3).textContent = t.description;
+                row.insertCell(4).textContent = `Rp ${t.amount.toLocaleString('id-ID')}`;
+                
+                // Tombol hapus
+                const deleteCell = row.insertCell(5);
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Hapus';
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.onclick = () => deleteTransaction(index);
+                deleteCell.appendChild(deleteBtn);
+            });
+        }
+        
+        function updateSummary() {
+            let totalIncome = 0;
+            let totalExpense = 0;
+            
+            transactions.forEach(t => {
+                // Filter berdasarkan bulan
+                if (currentMonthFilter !== 'all') {
+                    const month = t.date.split('/')[1];
+                    if (month !== currentMonthFilter) return;
+                }
+                
+                if (t.type === 'income') totalIncome += t.amount;
+                else totalExpense += t.amount;
+            });
+            
+            const balance = totalIncome - totalExpense;
+            
+            document.getElementById('totalIncome').textContent = `Rp ${totalIncome.toLocaleString('id-ID')}`;
+            document.getElementById('totalExpense').textContent = `Rp ${totalExpense.toLocaleString('id-ID')}`;
+            document.getElementById('balance').textContent = `Rp ${balance.toLocaleString('id-ID')}`;
+        }
+        
+        // Load data saat halaman dimuat
+        updateTable();
+        updateSummary();
+    </script>
+</body>
+</html>
